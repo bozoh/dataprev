@@ -22,4 +22,4 @@ rm("p","page","url", "url_page","dataprev_html","dataprev_table")
 
 head(dataprev)
 dataprev[which(dataprev$Situação!="NÃO CONVOCADO"),]
-write.csv2(dataprev, "dataprev2.csv")
+write.csv2(dataprev, "data/dataprev2.csv", row.names = F)
