@@ -16,13 +16,18 @@ cargo_field="&field_cargo_value=ANALISTA%20DE%20TECNOLOGIA%20DA%20INFORMA%C3%87%
 perfil_field="&field_perfil_value=INFRAESTRUTURA%20E%20APLICA%C3%87%C3%95ES"
 lotacao_field="&field_lotacao_value=RIO%20DE%20JANEIRO"
 page_field="&page="
-ultima_pagina=html_attr(dataprev_pagina, name='href') %>% str_extract("&page=[\\d]+") %>% 
+
+url=paste0(base_url,cargo_field,perfil_field,lotacao_field, sep="")
+
+ultima_pagina = read_html(url) %>% html_nodes('.pager-last') %>% html_nodes('a') %>% 
+  html_attr(name='href') %>% str_extract("&page=[\\d]+") %>% 
   str_extract("\\d+") %>% as.numeric()
+
+
 dataprev = data.frame();
 
 for(p in c(0:ultima_pagina)){
-  page=paste0(page_field,p,sep="")
-  url=paste0(base_url,cargo_field,perfil_field,lotacao_field, page, sep="")
+  url=paste0(url,page_field,p, sep="")
   dataprev_html <- read_html(url)
   dataprev_table <- html_nodes(dataprev_html, 'table')
   dataprev=rbind(dataprev,html_table(dataprev_table)[[1]])
@@ -75,15 +80,17 @@ for(p in c(0:ultima_pagina)){
 }
 rm("p","page","url", "base_url","dataprev_html","dataprev_table", "cod_insc", 
    "inscricao_field","pdc_cotas","cargo_field","perfil_field","lotacao_field",
-   "page_field","ultima_pagina", "inscricao")
+   "page_field","ultima_pagina", "inscricao", "dataprev_pagina")
 write.csv2(dataprev, "data/dataprev_completo.csv", row.names = F)
 
 #######
 #Pegando do csv
 dataprev=read.csv2("data/dataprev_completo.csv")
+#dp=read.csv2("data/dataprev2.csv")
 nomes = c("Cargo","Perfil", "Lotação", "Situação Vaga",  "Tipo Concorrência", 
           "Classificação", "Candidato", "Inscrição", "Situação")
 names(dataprev) = nomes
+#names(dp) = nomes
 rm(nomes)
 head(dataprev)
 
@@ -93,10 +100,8 @@ convocados_geral=dataprev %>% dplyr::filter(Situação == "EM ANDAMENTO") %>%
 
 ###### para o cargo/perfil 312RJ
 dataprev_312RJ=dplyr::filter(dataprev, Cargo == "ANALISTA DE TECNOLOGIA DA INFORMAÇÃO" ) %>% 
-  dplyr::filter(Perfil == "INFRAESTRUTURA E APLICAÇÕES") %>% 
-  dplyr::filter(Lotação == "RIO DE JANEIRO")
+  dplyr::filter(Lotação == "RIO DE JANEIRO") %>%
+  dplyr::filter(Perfil == "INFRAESTRUTURA E APLICAÇÕES")
 
 dataprev_312RJ %>% group_by(`Tipo Concorrência`) %>% count()
 dataprev_312RJ %>% dplyr::filter(Situação == "EM ANDAMENTO")
-
-
