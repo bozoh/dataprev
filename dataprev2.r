@@ -20,7 +20,7 @@ page_field="&page="
 url=paste0(base_url,cargo_field,perfil_field,lotacao_field, sep="")
 
 ultima_pagina = read_html(url) %>% html_nodes('.pager-last') %>% html_nodes('a') %>% 
-  html_attr(name='href') %>% str_extract("&page=[\\d]+") %>% 
+  html_attr(name='href') %>% str_extract("page=[\\d]+") %>% 
   str_extract("\\d+") %>% as.numeric()
 
 
@@ -58,7 +58,7 @@ head(dataprev)
 pdc_cotas=dataprev[which(dataprev$`Cadastro reserva`!="AMPLA CONCORRÊNCIA"),]
 dataprev[which(dataprev$`Disponibilidade do cadastro`!="DISPONÍVEL"),]
 convocados=dataprev[which(dataprev$Situação!="NÃO CONVOCADO"),]
-write.csv2(dataprev, "data/dataprev2.csv", row.names = F)
+write.csv2(dataprev, "data/dataprev2.csv", append=FALSE, row.names = F)
 
 ###
 #Todos os dados
@@ -67,7 +67,7 @@ write.csv2(dataprev, "data/dataprev2.csv", row.names = F)
 base_url="http://portal.dataprev.gov.br/situacao-concursados/2016?"
 dataprev_html <- read_html(base_url)
 dataprev_pagina <- html_nodes(dataprev_html, '.pager-last') %>% html_nodes('a')
-ultima_pagina = html_attr(dataprev_pagina, name='href') %>% str_extract("&page=[\\d]+") %>% 
+ultima_pagina = html_attr(dataprev_pagina, name='href') %>% str_extract("page=[\\d]+") %>% 
   str_extract("\\d+") %>% as.numeric()
 page_field="&page="
 dataprev = data.frame();
@@ -81,7 +81,7 @@ for(p in c(0:ultima_pagina)){
 rm("p","page","url", "base_url","dataprev_html","dataprev_table", "cod_insc", 
    "inscricao_field","pdc_cotas","cargo_field","perfil_field","lotacao_field",
    "page_field","ultima_pagina", "inscricao", "dataprev_pagina")
-write.csv2(dataprev, "data/dataprev_completo.csv", row.names = F)
+write.csv2(dataprev, "data/dataprev_completo.csv", append=FALSE, row.names = F)
 
 #######
 #Pegando do csv
@@ -96,7 +96,7 @@ head(dataprev)
 
 dataprev %>% group_by(`Tipo Concorrência`) %>% count()
 convocados_geral=dataprev %>% dplyr::filter(Situação == "EM ANDAMENTO") %>% 
-  select(Candidato,  Classificação, Perfil, Lotação)
+  select(Candidato,  Classificação, Perfil, Lotação, Cargo)
 
 ###### para o cargo/perfil 312RJ
 dataprev_312RJ=dplyr::filter(dataprev, Cargo == "ANALISTA DE TECNOLOGIA DA INFORMAÇÃO" ) %>% 
