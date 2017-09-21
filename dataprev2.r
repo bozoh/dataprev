@@ -100,6 +100,7 @@ dataprev %>% group_by(`Tipo Concorrência`) %>% count()
 ####Quantos Convocados (qualquer área)
 convocados_geral=dataprev %>% dplyr::filter(Situação == "EM ANDAMENTO") %>% 
   select(Candidato,  Classificação, Perfil, Lotação, Cargo)
+convocados_geral
 
 ###### para o cargo/perfil 312RJ
 dataprev_312RJ=dplyr::filter(dataprev, Cargo == "ANALISTA DE TECNOLOGIA DA INFORMAÇÃO" ) %>% 
@@ -108,6 +109,7 @@ dataprev_312RJ=dplyr::filter(dataprev, Cargo == "ANALISTA DE TECNOLOGIA DA INFOR
 
 #####Quantos PCD, Cotistas
 dataprev_312RJ %>% group_by(`Tipo Concorrência`) %>% count()
+
 #####Quantos convodados
 dataprev_312RJ %>% dplyr::filter(Situação == "EM ANDAMENTO")
 
