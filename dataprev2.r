@@ -94,7 +94,10 @@ names(dataprev) = nomes
 rm(nomes)
 head(dataprev)
 
+####Quantos PCD, Cotistas
 dataprev %>% group_by(`Tipo Concorrência`) %>% count()
+
+####Quantos Convocados (qualquer área)
 convocados_geral=dataprev %>% dplyr::filter(Situação == "EM ANDAMENTO") %>% 
   select(Candidato,  Classificação, Perfil, Lotação, Cargo)
 
@@ -103,5 +106,20 @@ dataprev_312RJ=dplyr::filter(dataprev, Cargo == "ANALISTA DE TECNOLOGIA DA INFOR
   dplyr::filter(Lotação == "RIO DE JANEIRO") %>%
   dplyr::filter(Perfil == "INFRAESTRUTURA E APLICAÇÕES")
 
+#####Quantos PCD, Cotistas
 dataprev_312RJ %>% group_by(`Tipo Concorrência`) %>% count()
+#####Quantos convodados
 dataprev_312RJ %>% dplyr::filter(Situação == "EM ANDAMENTO")
+
+#####Classificação dos PCD/Cotistas na Ampla concorrência (para o cargo 312RJ)
+inscricao_pdc_cotista=dataprev_312RJ %>% group_by(`Inscrição`) %>% count() %>% dplyr::filter(n >1) %>% 
+  select(`Inscrição`)
+
+dataprev_312RJ_PCD_COTAS = data.frame()
+for(i in c(1:nrow(inscricao_pdc_cotista))){
+  ins = inscricao_pdc_cotista[i,1] %>% as.character() 
+  dataprev_312RJ_PCD_COTAS = rbind(dataprev_312RJ_PCD_COTAS, dataprev_312RJ %>% dplyr::filter(Inscrição == ins) %>% 
+    select(Candidato,  Classificação, `Tipo Concorrência`))
+}
+rm(inscricao_pdc_cotista)
+dataprev_312RJ_PCD_COTAS
